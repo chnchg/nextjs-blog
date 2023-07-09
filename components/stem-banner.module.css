@@ -10,13 +10,19 @@
 	align-items: center;
 }
 
+.header > h1 {
+	color: coral;
+	text-shadow: #000 4px 4px 4px;
+}
+
 .backToHome {
 	margin: 3rem 0 0;
 }
 
 ul.menu {
 	display: flex;
-	border: 1px solid red;
+	overflow: visible;
+	list-style-type: none;
 }
 
 ul.menu>li {
@@ -25,6 +31,28 @@ ul.menu>li {
 	margin: auto;
 }
 
+ul.menu>li:hover {
+	/* display: inline; */
+	color: #fff;
+	margin: auto;
+	text-shadow: #000 2px 2px 2px;
+}
+
+ul.submenu {
+	display: none;
+	position: absolute;
+	color: #00f;
+	text-shadow: none;
+	background-color: #8888;
+	list-style-type: none;
+	padding: 4px;
+}
+
+li:hover ul.submenu {
+	display: block;
+}
+
 .banner {
-	background: #338EDA;
+	background-image:	radial-gradient(at left top, rgb(91, 192, 222), rgb(51, 142, 218));
+	overflow: visible;
 }

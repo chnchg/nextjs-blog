@@ -1,8 +1,14 @@
 import Head from 'next/head';
-import Image from 'next/image';
+// import Image from 'next/image';
 import styles from './stem-banner.module.css';
-import utilStyles from '../styles/utils.module.css';
+// import utilStyles from '../styles/utils.module.css';
 import Link from 'next/link';
+import {Orbitron} from 'next/font/google';
+
+export const orbitron = Orbitron({
+	subsets: ['latin'],
+	display: 'swap',
+})
 
 export default function Banner({children, home, err404}) {
 	return (
@@ -11,13 +17,19 @@ export default function Banner({children, home, err404}) {
 				<link rel="icon" href="/favicon.ico" />
 				<meta name="og:title" content="STEM Club" />
 			</Head>
-			<header className={styles.header}>
-				<h1>STEM Club</h1>
-			</header>
 			<div className={styles.banner}>
+			<header className={styles.header}>
+				<h1 className={orbitron.className}>STEM Club</h1>
+			</header>
 			<ul className={styles.menu}>
 				<li>Home</li>
-				<li>Projects</li>
+				<li>Projects
+					<ul className={styles.submenu}>
+						<li>Website</li>
+						<li>Programming</li>
+						<li>Hardware</li>
+					</ul>
+				</li>
 				<li>Media</li>
 				<li>News</li>
 				<li>Login/Signup</li>
