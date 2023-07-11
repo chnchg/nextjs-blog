@@ -3,12 +3,18 @@
 import './global.css'
 import { get_available_projects } from './projects/page';
 import styles from './stem.module.css'
-import {Orbitron} from 'next/font/google'
+import {Orbitron, Rubik} from 'next/font/google'
 import Link from 'next/link'
 import path from 'path'
 
 export const orbitron = Orbitron({
   variable: '--font-orbitron',
+	subsets: ['latin'],
+	display: 'swap',
+})
+
+export const rubik = Rubik({
+	variable: '--font-rubik',
 	subsets: ['latin'],
 	display: 'swap',
 })
@@ -22,17 +28,17 @@ const projects = get_available_projects();
  
 export default function RootLayout({ children }) {
  return (<html lang="en">
-  <body className={orbitron.variable}>
+  <body className={rubik.className}>
     <div className={styles.banner}>
-      <h1>STEM Club</h1>
+      <h1 className={orbitron.className}>STEM Club</h1>
     </div>
     <div className={styles.nav}>
     <ul className={styles.menu}>
 				<li><Link href="/">Home</Link></li>
 				<li><Link href="/projects">Projects</Link>
 					<ul className={styles.submenu}>
-						{projects.map(project => <li>
-							<Link href={path.join('/projects',project.id)}>{project.name}</Link>
+						{projects.map(({id, name}) => <li key={id}>
+							<Link href={path.join('/projects',id)}>{name}</Link>
 						</li>)}
 					</ul>
 				</li>
@@ -42,5 +48,9 @@ export default function RootLayout({ children }) {
 			</ul>
     </div>
     <main className={styles.main}>{children}</main>
+		<div className={styles.footer}>
+		<hr/>
+		<address>Designed and maintained by YY</address>
+		</div>
   </body>
 </html>)}

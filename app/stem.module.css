@@ -1,6 +1,5 @@
 .banner {
 	padding: 4px 4px;
-	font-family: var(--font-orbitron);
 	text-align: center;
 	color: coral;
 	text-shadow: #000 4px 4px 4px;
@@ -42,17 +41,7 @@
 	text-shadow: #f80 2px 2px 2px;
 }
 
-@keyframes drop-menu {
-	from {
-		transform: translateY(-50%) scaleY(0);
-	};
-	to {
-		transform: translateY(0%) scaleY(1);
-	};
-}
-
 .menu>li>ul {
-	visibility: hidden;
 	position: absolute;
 	color: #00f;
 	text-shadow: none;
@@ -60,15 +49,29 @@
 	list-style-type: none;
 	padding: 4px;
 	overflow: hidden;
+	clip-path: polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%);
+	transform: translateY(-100%);
+	transition: transform .5s, clip-path .5s;
 }
 
 .menu>li:hover>ul {
-	visibility: visible;
-	animation-name: drop-menu;
-	animation-duration: .125s;
+	clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+	transform: translateY(0%);
 }
-
 
 .main {
 	margin: 4px;
+}
+
+.footer hr {
+	margin-left: 4px;
+	margin-right: 4px;
+	border: 2px solid #fdd;
+	border-radius: 2px;
+}
+
+.footer address {
+	text-align: right;
+	margin-right: 1em;
+	color: #f88;
 }

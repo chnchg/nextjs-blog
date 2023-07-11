@@ -18,6 +18,6 @@ export function get_available_projects()
 export default () => <>
 	<h2>List of Projects</h2>
 	<ul>
-		{project_list.map(project => <li>{fs.existsSync(path.join('app/projects',project.id)) ? <Link href={path.join('/projects',project.id)}>{project.name}</Link> : project.name}</li>)}
+		{project_list.map(({id,name}) => <li key={id}>{fs.existsSync(path.join('app/projects',id)) ? <Link href={path.join('/projects',id)}>{name}</Link> : name}</li>)}
 	</ul>
 </>;
