@@ -1,9 +1,11 @@
 "use strict";
 
 import './global.css'
+import { get_available_projects } from './projects/page';
 import styles from './stem.module.css'
 import {Orbitron} from 'next/font/google'
 import Link from 'next/link'
+import path from 'path'
 
 export const orbitron = Orbitron({
   variable: '--font-orbitron',
@@ -15,6 +17,8 @@ export const metadata = {
   title: 'STEM Club Online Information',
   description: 'Maintained by YY',
 }
+
+const projects = get_available_projects();
  
 export default function RootLayout({ children }) {
  return (<html lang="en">
@@ -25,11 +29,11 @@ export default function RootLayout({ children }) {
     <div className={styles.nav}>
     <ul className={styles.menu}>
 				<li><Link href="/">Home</Link></li>
-				<li>Projects
+				<li><Link href="/projects">Projects</Link>
 					<ul className={styles.submenu}>
-						<li>Website</li>
-						<li>Programming</li>
-						<li>Hardware</li>
+						{projects.map(project => <li>
+							<Link href={path.join('/projects',project.id)}>{project.name}</Link>
+						</li>)}
 					</ul>
 				</li>
 				<li>Media</li>
