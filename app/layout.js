@@ -2,7 +2,7 @@
 
 import './global.css'
 import { get_available_projects } from './projects/page';
-import styles from './stem.module.css'
+import styles from './mud.module.css'
 import {Orbitron, Rubik} from 'next/font/google'
 import Link from 'next/link'
 import path from 'path'
@@ -20,8 +20,8 @@ export const rubik = Rubik({
 })
 
 export const metadata = {
-  title: 'STEM Club Online Information',
-  description: 'Maintained by YY',
+  title: 'Learn, Think, Code and Play',
+  description: 'A playground site built with Next.js',
 }
 
 const projects = get_available_projects();
@@ -30,7 +30,7 @@ export default function RootLayout({ children }) {
  return (<html lang="en">
   <body className={rubik.className}>
     <div className={styles.banner}>
-      <h1 className={orbitron.className}>STEM Club</h1>
+      <h1 className={orbitron.className}>{metadata.title}</h1>
     </div>
     <div className={styles.nav}>
     <ul className={styles.menu}>
@@ -42,15 +42,13 @@ export default function RootLayout({ children }) {
 						</li>)}
 					</ul>
 				</li>
-				<li>Media</li>
-				<li>News</li>
 				<li>Login/Signup</li>
 			</ul>
     </div>
     <main className={styles.main}>{children}</main>
 		<div className={styles.footer}>
 		<hr/>
-		<address>Designed and maintained by YY</address>
+		<address>Designed and maintained by BZ</address>
 		</div>
   </body>
 </html>)}

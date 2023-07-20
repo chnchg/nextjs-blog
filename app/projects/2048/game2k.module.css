@@ -1,0 +1,60 @@
+.game_board_container {
+	position: relative;
+	display: inline-block;
+}
+
+.game_score {
+	color: #800;
+}
+
+.game_board {
+	display: inline-block;
+	background-color: #888;
+}
+
+.game_board > div {
+	position: absolute;
+	background-color: #eee;
+}
+
+.game_board > .cell {
+	background-color: #eee;
+}
+
+.game_board > [value] {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: 250ms;
+}
+
+.game_message {
+	position: absolute;
+	top: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 10;
+	background: #ddfc;
+}
+
+.game_message[hide] {
+	display: none;
+}
+
+.game_board > [value="2"] {font-size: 70%; background: #ffe;}
+.game_board > [value="4"] {font-size: 70%; background: #fef;}
+.game_board > [value="8"] {font-size: 70%; background: #eff;}
+.game_board > [value="16"] {font-size: 60%; background: #fee;}
+.game_board > [value="32"] {font-size: 60%; background: #eef;}
+.game_board > [value="64"] {font-size: 60%; background: #efe;}
+.game_board > [value="128"] {font-size: 50%; background: #fed;}
+.game_board > [value="256"] {font-size: 50%; background: #dfe;}
+.game_board > [value="512"] {font-size: 50%; background: #edf;}
+.game_board > [value="1024"] {font-size: 40%; background: #fde;}
+.game_board > [value="2048"] {font-size: 40%; background: #efd; color: #640;}
+.game_board > [value="4096"] {font-size: 40%; background: #def; color: #640;}
+.game_board > [value="8192"] {font-size: 40%; background: #fbd; color: #640;}
+.game_board > [value="16384"] {font-size: 32%; background: #dfb; color: #640;}
+.game_board > [value="32768"] {font-size: 32%; background: #bdf; color: #640;}
+.game_board > [value="65536"] {font-size: 32%; background: #f8a; color: #640;}
