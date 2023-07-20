@@ -25,6 +25,9 @@ export default function Game({lateralSize, boardSize}) {
 				</div>
 				<div className={styles.game_message} name="message"></div>
 			</div>
+			<div><input type="button" value="Restart" onClick={()=>{
+				gameRef.current.game.newGame();
+			}}/></div>
 		</div>
 		<style>{`
 		.${styles.game_board} {
@@ -53,8 +56,9 @@ export default function Game({lateralSize, boardSize}) {
 		<Script
 			src="/game2k_code.js"
 			onLoad={() => {
-				const game = new Game2048(lateralSize, gameRef.current);
-				gameRef.current.onkeydown = game.processKey;
+				const obj = gameRef.current;
+				obj.game = new Game2048(lateralSize, gameRef.current);
+				obj.onkeydown = obj.game.processKey;
 			}}
 		></Script>
 	</>;

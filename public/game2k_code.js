@@ -160,14 +160,19 @@ function Game2048(lateralSize, game) {
 				console.log('Unknown key:', key);
 		}
 	};
-	// Initialize game
-	gameTiles.forEach(t => {if (t!==null) t.remove();}); // Clear existing tiles
-	gameTiles = Array(siteNumber).fill(null);
-	gameScore = 0;
-	score.innerHTML = `${gameScore}`;
-	// Start game
-	message.setAttribute('hide', 1);
-	randomDrop();
-	randomDrop();
-	blockPlay = false;
+
+	this.newGame = () => {
+		// Initialize game
+		gameTiles.forEach(t => {if (t!==null) t.remove();}); // Clear existing tiles
+		gameTiles = Array(siteNumber).fill(null);
+		gameScore = 0;
+		score.innerHTML = `${gameScore}`;
+		// Start game
+		message.setAttribute('hide', 1);
+		randomDrop();
+		randomDrop();
+		blockPlay = false;
+	};
+
+	this.newGame();
 };
