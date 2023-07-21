@@ -1,3 +1,3 @@
-import Game from "./game2k";
+import MyGame from "./game2048";
 
-export default () => <Game lateralSize={4} boardSize={256} />;
+export default () => <MyGame />;

@@ -9,12 +9,17 @@
 
 .game_board {
 	display: inline-block;
+	width: 256px;
+	height: 256px;
+	font-size: 60px;
 	background-color: #888;
 }
 
 .game_board > div {
 	position: absolute;
 	background-color: #eee;
+	width: 60px;
+	height: 60px;
 }
 
 .game_board > .cell {
@@ -30,6 +35,9 @@
 
 .game_message {
 	position: absolute;
+	width: 256px;
+	height: 256px;
+	font-size: 30px;
 	top: 0;
 	display: flex;
 	align-items: center;
@@ -41,6 +49,16 @@
 .game_message[hide] {
 	display: none;
 }
+
+.game_board > div[x-pos="0"] {left: 5px;}
+.game_board > div[x-pos="1"] {left: 67px;}
+.game_board > div[x-pos="2"] {left: 129px;}
+.game_board > div[x-pos="3"] {left: 191px;}
+.game_board > div[y-pos="0"] {top: 5px;}
+.game_board > div[y-pos="1"] {top: 67px;}
+.game_board > div[y-pos="2"] {top: 129px;}
+.game_board > div[y-pos="3"] {top: 191px;}
+
 
 .game_board > [value="2"] {font-size: 70%; background: #ffe;}
 .game_board > [value="4"] {font-size: 70%; background: #fef;}
