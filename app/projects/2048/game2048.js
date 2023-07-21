@@ -29,20 +29,18 @@ export default function MyGame({}) {
 				if (typeof(obj.game)=='undefined' || obj.game===null) {
 					delete globalThis.game;
 					obj.game = new Game2048(lateralSize, gameRef.current);
-					obj.onkeydown = obj.game.processKey;
 					globalThis.game = obj.game;
 				}
 				obj.game.newGame();
 			}}/></div>
 		</div>
 		<Script
-			src="/game2k_code.js"
+			src="/game2048_script.js"
 			onLoad={() => {
 				const obj = gameRef.current;
 				console.log(gameRef.current);
-				obj.game = new Game2048(lateralSize, gameRef.current);
-				obj.onkeydown = obj.game.processKey;
-				globalThis.game = obj.game;
+				obj.game = new Game2048(lateralSize, gameRef.current);			
+				globalThis.game = obj.game; // Keep the reference for clean up...
 			}}
 		></Script>
 	</>;

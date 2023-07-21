@@ -20,6 +20,58 @@ function Game2048(lateralSize, game) {
 	const board = findName(game, 'board');
 	const message = findName(game, 'message');
 
+	// Setup key event handlers
+	game.addEventListener('keydown', (event) => {
+		switch(event.keyCode) {
+			case 38:
+				this.play('Up');
+				break;
+			case 40:
+				this.play('Down');
+				break;
+			case 37:
+				this.play('Left');
+				break;
+			case 39:
+				this.play('Right');
+				break;
+			default:
+				console.log('Unknown key:', event.keyCode);
+		}
+	});
+
+	// Setup touch event handlers
+	var touch_start = null;
+	game.addEventListener('touchstart', (event) => {
+		touch_start = {
+			x: event.changedTouches[0].pageX,
+			y: event.changedTouches[0].pageY,
+			t: event.timeStamp,
+		}
+		event.preventDefault();
+	});
+	game.addEventListener("touchmove", (event) => {
+		if (touch_start===null) return;
+		let dt = event.timeStamp - touch_start.t;
+		if (dt<200) event.preventDefault();
+		else touch_start = null; // Cancel swipe detection
+	});
+	game.addEventListener("touchend", (event) => {
+		if (touch_start===null) return;
+		let dt = event.timeStamp - touch_start.t;
+		if (dt<200) {
+			let dx = event.changedTouches[0].pageX - touch_start.x;
+			let dy = event.changedTouches[0].pageY - touch_start.y;
+			console.log('Touch period', dt, dx, dy);
+			if (dy<-50 && Math.abs(dx/dy)<.5) this.play('Up');
+			else if (dy>50 && Math.abs(dx/dy)<.5) this.play('Down');
+			else if (dx<-50 && Math.abs(dy/dx)<.5) this.play('Left');
+			else if (dx>50 && Math.abs(dy/dx)<.5) this.play('Right');
+			event.preventDefault();
+		}
+		touch_start = null;
+	});
+
 	function randomDrop() {
 		let availableSites = Array.from({length: siteNumber},(_,i)=>i).filter(i => gameTiles[i] === null);
 		if (availableSites.length == 0) return;
@@ -97,7 +149,7 @@ function Game2048(lateralSize, game) {
 		return true;
 	};
 
-	function play(move) {
+	this.play = (move) => {
 		if (blockPlay) return; // If not playing, do nothing...
 		// Make sure message overlay is hidden.
 		if (!message.getAttribute('hide')) message.setAttribute('hide', 1);
@@ -140,25 +192,6 @@ function Game2048(lateralSize, game) {
 			}, 0);
 			else blockPlay = false; // Unblock play if game is not over
 		}, 300);
-	};
-
-	this.processKey = (key) => {
-		switch(key.keyCode) {
-			case 38:
-				play('Up');
-				break;
-			case 40:
-				play('Down');
-				break;
-			case 37:
-				play('Left');
-				break;
-			case 39:
-				play('Right');
-				break;
-			default:
-				console.log('Unknown key:', key);
-		}
 	};
 
 	this.newGame = () => {
