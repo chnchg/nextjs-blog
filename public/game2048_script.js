@@ -48,7 +48,6 @@ function Game2048(lateralSize, game) {
 			y: event.changedTouches[0].pageY,
 			t: event.timeStamp,
 		}
-		event.preventDefault();
 	});
 	game.addEventListener("touchmove", (event) => {
 		if (touch_start===null) return;
@@ -59,17 +58,17 @@ function Game2048(lateralSize, game) {
 	game.addEventListener("touchend", (event) => {
 		if (touch_start===null) return;
 		let dt = event.timeStamp - touch_start.t;
+		let dx = event.changedTouches[0].pageX - touch_start.x;
+		let dy = event.changedTouches[0].pageY - touch_start.y;
+		touch_start = null;
 		if (dt<200) {
-			let dx = event.changedTouches[0].pageX - touch_start.x;
-			let dy = event.changedTouches[0].pageY - touch_start.y;
-			console.log('Touch period', dt, dx, dy);
 			if (dy<-50 && Math.abs(dx/dy)<.5) this.play('Up');
 			else if (dy>50 && Math.abs(dx/dy)<.5) this.play('Down');
 			else if (dx<-50 && Math.abs(dy/dx)<.5) this.play('Left');
 			else if (dx>50 && Math.abs(dy/dx)<.5) this.play('Right');
+			else return; // No swiping, don't prevent default
 			event.preventDefault();
 		}
-		touch_start = null;
 	});
 
 	function randomDrop() {
