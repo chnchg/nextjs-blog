@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>2048</title>
+<style>
+#game2048 div[name="container"] {
+	position: relative;
+	display: block;
+}
+
+#game2048 [name="score"] {
+	color: #800;
+}
+
+#game2048 div[name="board"] {
+	display: inline-block;
+	width: 256px;
+	height: 256px;
+	font-size: 60px;
+	background-color: #888;
+}
+
+#game2048 div[name="board"] > div {
+	position: absolute;
+	background-color: #eee;
+	width: 60px;
+	height: 60px;
+}
+
+#game2048 div[name="board"] > .cell {
+	background-color: #eee;
+}
+
+#game2048 div[name="board"] > [value] {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: 250ms;
+}
+
+#game2048 [name="message"] {
+	position: absolute;
+	width: 256px;
+	height: 256px;
+	font-size: 30px;
+	top: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 10;
+	background: #ddfc;
+}
+
+#game2048 [name="message"][hide] {
+	display: none;
+}
+
+#game2048 div[name="board"] > div[x-pos="0"] {left: 5px;}
+#game2048 div[name="board"] > div[x-pos="1"] {left: 67px;}
+#game2048 div[name="board"] > div[x-pos="2"] {left: 129px;}
+#game2048 div[name="board"] > div[x-pos="3"] {left: 191px;}
+#game2048 div[name="board"] > div[y-pos="0"] {top: 5px;}
+#game2048 div[name="board"] > div[y-pos="1"] {top: 67px;}
+#game2048 div[name="board"] > div[y-pos="2"] {top: 129px;}
+#game2048 div[name="board"] > div[y-pos="3"] {top: 191px;}
+
+#game2048 div[name="board"] > div[value="2"] {font-size: 70%; background: #ffe;}
+#game2048 div[name="board"] > div[value="4"] {font-size: 70%; background: #fef;}
+#game2048 div[name="board"] > div[value="8"] {font-size: 70%; background: #eff;}
+#game2048 div[name="board"] > div[value="16"] {font-size: 60%; background: #fee;}
+#game2048 div[name="board"] > div[value="32"] {font-size: 60%; background: #eef;}
+#game2048 div[name="board"] > div[value="64"] {font-size: 60%; background: #efe;}
+#game2048 div[name="board"] > div[value="128"] {font-size: 50%; background: #fed;}
+#game2048 div[name="board"] > div[value="256"] {font-size: 50%; background: #dfe;}
+#game2048 div[name="board"] > div[value="512"] {font-size: 50%; background: #edf;}
+#game2048 div[name="board"] > div[value="1024"] {font-size: 40%; background: #fde;}
+#game2048 div[name="board"] > div[value="2048"] {font-size: 40%; background: #efd; color: #640;}
+#game2048 div[name="board"] > div[value="4096"] {font-size: 40%; background: #def; color: #640;}
+#game2048 div[name="board"] > div[value="8192"] {font-size: 40%; background: #fbd; color: #640;}
+#game2048 div[name="board"] > div[value="16384"] {font-size: 32%; background: #dfb; color: #640;}
+#game2048 div[name="board"] > div[value="32768"] {font-size: 32%; background: #bdf; color: #640;}
+#game2048 div[name="board"] > div[value="65536"] {font-size: 32%; background: #f8a; color: #640;}
+</style>
+<script>
+'use strict';
+
+function findName(element, name) { // Find a descendant node with given name
+	if (element.getAttribute("name")===name) return element;
+	for (let child of element.children) {
+		let ret = findName(child, name);
+		if (ret !== null) return ret;
+	}
+	return null;
+}
+
+function Game2048(lateralSize, game) {
+	this.lateralSize = lateralSize;
+	let siteNumber = lateralSize*lateralSize;
+	let gameTiles = [];
+	let gameScore = 0;
+	let blockPlay = true; // Whether to block play (updating tiles or game over)
+	let gameGoal = false; // Whether 2048 is reached
+	const score = findName(game, 'score');
+	const board = findName(game, 'board');
+	const message = findName(game, 'message');
+
+	function randomDrop() {
+		let availableSites = Array.from({length: siteNumber},(_,i)=>i).filter(i => gameTiles[i] === null);
+		if (availableSites.length == 0) return;
+		let idx = availableSites[Math.floor(Math.random()*availableSites.length)]; // Random site
+		let tile = document.createElement('div');
+		gameTiles[idx] = tile;
+		tile.classList.add('tile');
+		let value = Math.random() > .1 ? 2 : 4;
+		tile.setAttribute('x-pos', idx%lateralSize);
+		tile.setAttribute('y-pos', Math.floor(idx/lateralSize));
+		tile.setAttribute('value', value);
+		tile.innerHTML = `${value}`;
+		board.appendChild(tile);
+	};
+
+	function collapseLine(start, increment) { // Checking against the direction of collapse 
+		let lastSite = start;
+		let anyAction = false;
+		for (let step = 1; step<lateralSize; step++) {
+			let site = start+step*increment;
+			if (gameTiles[site]===null) continue;
+			if (gameTiles[lastSite]===null) { // Move to the farthest empty site
+				gameTiles[site].setAttribute('x-pos', lastSite%lateralSize);
+				gameTiles[site].setAttribute('y-pos', Math.floor(lastSite/lateralSize));
+				gameTiles[lastSite] = gameTiles[site];
+				gameTiles[site] = null;
+				anyAction = true;
+			}
+			else if (gameTiles[site].getAttribute('value')==gameTiles[lastSite].getAttribute('value')) { // Merge
+				let rm = gameTiles[lastSite]; // Tile to be removed
+				let ch = gameTiles[site]; // Tile to be updated (value)
+				let v = Number(gameTiles[site].getAttribute('value'))*2; // new value
+				setTimeout(()=>{ // Update number and remove old one later
+					rm.remove();
+					ch.setAttribute('value', v);
+					gameScore += v; // Add to game score
+					score.innerHTML = `${gameScore}`;
+					if (!gameGoal && v>=2048) { // Goal reached...
+						gameGoal = true;
+						setTimeout(() => {
+							message.innerHTML = "You Win!";
+							message.removeAttribute('hide');
+						},0);
+					}
+				},250);
+				gameTiles[site].setAttribute('x-pos', lastSite%lateralSize);
+				gameTiles[site].setAttribute('y-pos', Math.floor(lastSite/lateralSize));
+				gameTiles[lastSite] = gameTiles[site];
+				gameTiles[site] = null;
+				lastSite += increment;
+				anyAction = true;
+			}
+			else {
+				lastSite += increment;
+				if (lastSite===site) continue;
+				// Move
+				gameTiles[site].setAttribute('x-pos', lastSite%lateralSize);
+				gameTiles[site].setAttribute('y-pos', Math.floor(lastSite/lateralSize));
+				gameTiles[lastSite] = gameTiles[site];
+				gameTiles[site] = null;
+				anyAction = true;
+			};
+		};
+		return anyAction;
+	};
+
+	function checkGame() { // Check if game is over
+		for (let i = 0; i<siteNumber; i++) {
+			if (gameTiles[i]===null) return false; // Check for empty cell
+			// Check for neighboring tiles with the same value
+			let v = gameTiles[i].getAttribute('value');
+			if (i%lateralSize && gameTiles[i-1].getAttribute('value')===v) return false;
+			if (i>=lateralSize && gameTiles[i-lateralSize].getAttribute('value')===v) return false;
+		}
+		return true;
+	};
+
+	this.play = (move) => {
+		if (blockPlay) return; // If not playing, do nothing...
+		// Make sure message overlay is hidden.
+		if (!message.getAttribute('hide')) message.setAttribute('hide', 1);
+		// Collapse lines differently for different directions
+		let anyAction = false;
+		switch (move) {
+			case 'Up':
+				for (let line = 0; line<lateralSize; line++) {
+					anyAction = collapseLine(line, lateralSize) || anyAction;
+				};
+				break;
+			case 'Down':
+				for (let line = 0; line<lateralSize; line++) {
+					anyAction = collapseLine(siteNumber-1-line,-lateralSize) || anyAction;
+				};
+				break;
+			case 'Left':
+				for (let line = 0; line<lateralSize; line++) {
+					anyAction = collapseLine(line*lateralSize,1) || anyAction;
+				};
+				break;
+			case 'Right':
+				for (let line = 0; line<lateralSize; line++) {
+					anyAction = collapseLine(siteNumber-1-line*lateralSize ,-1) || anyAction;
+				};
+				break;
+		}
+		if (!anyAction) return; // No action, not a legal move.
+		// Delay random drop and the checking of game over, game play is block during the delay
+		blockPlay = true;
+		setTimeout(() => {
+			for (let idx = 0; idx<siteNumber; idx++) {
+				if (gameTiles[idx]===null) continue;
+				gameTiles[idx].innerHTML = gameTiles[idx].getAttribute('value');
+			};
+			randomDrop();
+			if (checkGame()) setTimeout(() => {
+				message.innerHTML = "Game Over!";
+				message.removeAttribute('hide');
+			}, 0);
+			else blockPlay = false; // Unblock play if game is not over
+		}, 300);
+	};
+
+	this.newGame = () => {
+		// Initialize game
+		gameTiles.forEach(t => {if (t!==null) t.remove();}); // Clear existing tiles
+		gameTiles = Array(siteNumber).fill(null);
+		gameScore = 0;
+		score.innerHTML = `${gameScore}`;
+		// Start game
+		message.setAttribute('hide', 1);
+		randomDrop();
+		randomDrop();
+		blockPlay = false;
+	};
+
+	this.newGame();
+};
+window.onload = () => {
+	const game = document.getElementById('game2048');
+	globalThis.game = new Game2048(4, game);
+	game.addEventListener("keydown", (event) => {
+		switch(event.keyCode) {
+			case 38:
+				globalThis.game.play('Up');
+				break;
+			case 40:
+				globalThis.game.play('Down');
+				break;
+			case 37:
+				globalThis.game.play('Left');
+				break;
+			case 39:
+				globalThis.game.play('Right');
+				break;
+			default:
+				console.log('Unknown key:', event.keyCode);
+		}
+	});
+	var touch_start = null;
+	game.addEventListener("touchstart", (event) => {
+		touch_start = {
+			x: event.changedTouches[0].pageX,
+			y: event.changedTouches[0].pageY,
+			t: event.timeStamp,
+		};
+	});
+	game.addEventListener("touchmove", (event) => {
+		if (touch_start===null) return;
+		let dt = event.timeStamp - touch_start.t;
+		if (dt<200) event.preventDefault();
+		else touch_start = null; // Cancel swipe detection
+	});
+	game.addEventListener("touchend", (event) => {
+		if (touch_start===null) return;
+		let dt = event.timeStamp - touch_start.t;
+		let dx = event.changedTouches[0].pageX - touch_start.x;
+		let dy = event.changedTouches[0].pageY - touch_start.y;
+		touch_start = null;
+		if (dt<200) {
+			if (dy<-30 && Math.abs(dx/dy)<.5) globalThis.game.play('Up');
+			else if (dy>30 && Math.abs(dx/dy)<.5) globalThis.game.play('Down');
+			else if (dx<-30 && Math.abs(dy/dx)<.5) globalThis.game.play('Left');
+			else if (dx>30 && Math.abs(dy/dx)<.5) globalThis.game.play('Right');
+			else return; // No swipe, don't prevent default
+			event.preventDefault();
+		}
+	});
+};
+</script>
+</head>
+<body>
+	<h1>2048</h1>
+	<div id="game2048" tabindex="0">
+		<p>Score: <span name="score"></span></p>
+		<div name="container">
+			<div name="board">
+				<div class="cell" x-pos="0" y-pos="0"></div>
+				<div class="cell" x-pos="1" y-pos="0"></div>
+				<div class="cell" x-pos="2" y-pos="0"></div>
+				<div class="cell" x-pos="3" y-pos="0"></div>
+				<div class="cell" x-pos="0" y-pos="1"></div>
+				<div class="cell" x-pos="1" y-pos="1"></div>
+				<div class="cell" x-pos="2" y-pos="1"></div>
+				<div class="cell" x-pos="3" y-pos="1"></div>
+				<div class="cell" x-pos="0" y-pos="2"></div>
+				<div class="cell" x-pos="1" y-pos="2"></div>
+				<div class="cell" x-pos="2" y-pos="2"></div>
+				<div class="cell" x-pos="3" y-pos="2"></div>
+				<div class="cell" x-pos="0" y-pos="3"></div>
+				<div class="cell" x-pos="1" y-pos="3"></div>
+				<div class="cell" x-pos="2" y-pos="3"></div>
+				<div class="cell" x-pos="3" y-pos="3"></div>
+			</div>
+			<div name="message" hide="1"></div>
+		</div>
+		<input type="button" value="New Game" onclick="game.newGame();">
+	</div>
+</body>
