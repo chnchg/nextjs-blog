@@ -2,6 +2,7 @@
 <html>
 <head>
 	<title>2048</title>
+	<meta name="viewport" content="width=device-width, user-scalable=no">
 <style>
 #game2048 div[name="container"] {
 	position: relative;
@@ -35,7 +36,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	transition: 250ms;
+	transition: 150ms;
 }
 
 #game2048 [name="message"] {
@@ -80,6 +81,10 @@
 #game2048 div[name="board"] > div[value="16384"] {font-size: 32%; background: #dfb; color: #640;}
 #game2048 div[name="board"] > div[value="32768"] {font-size: 32%; background: #bdf; color: #640;}
 #game2048 div[name="board"] > div[value="65536"] {font-size: 32%; background: #f8a; color: #640;}
+
+html, body {
+	overscroll-behavior-y: contain;
+}
 </style>
 <script>
 'use strict';
@@ -244,7 +249,7 @@ function Game2048(lateralSize, game) {
 window.onload = () => {
 	const game = document.getElementById('game2048');
 	globalThis.game = new Game2048(4, game);
-	window.addEventListener("keydown", (event) => {
+	document.addEventListener("keydown", (event) => {
 		switch(event.keyCode) {
 			case 38:
 				globalThis.game.play('Up');
@@ -263,26 +268,27 @@ window.onload = () => {
 		}
 	});
 	var touch_start = null;
-	window.addEventListener("touchstart", (event) => {
+	document.addEventListener("touchstart", (event) => {
 		touch_start = {
 			x: event.changedTouches[0].pageX,
 			y: event.changedTouches[0].pageY,
 			t: event.timeStamp,
 		};
+		event.preventDefault();
 	});
-	window.addEventListener("touchmove", (event) => {
+	document.addEventListener("touchmove", (event) => {
 		if (touch_start===null) return;
 		let dt = event.timeStamp - touch_start.t;
-		if (dt<200) event.preventDefault();
+		if (dt<400) event.preventDefault();
 		else touch_start = null; // Cancel swipe detection
 	});
-	window.addEventListener("touchend", (event) => {
+	document.addEventListener("touchend", (event) => {
 		if (touch_start===null) return;
 		let dt = event.timeStamp - touch_start.t;
 		let dx = event.changedTouches[0].pageX - touch_start.x;
 		let dy = event.changedTouches[0].pageY - touch_start.y;
 		touch_start = null;
-		if (dt<200) {
+		if (dt<400) {
 			if (dy<-30 && Math.abs(dx/dy)<.5) globalThis.game.play('Up');
 			else if (dy>30 && Math.abs(dx/dy)<.5) globalThis.game.play('Down');
 			else if (dx<-30 && Math.abs(dy/dx)<.5) globalThis.game.play('Left');
