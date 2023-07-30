@@ -244,7 +244,7 @@ function Game2048(lateralSize, game) {
 window.onload = () => {
 	const game = document.getElementById('game2048');
 	globalThis.game = new Game2048(4, game);
-	game.addEventListener("keydown", (event) => {
+	window.addEventListener("keydown", (event) => {
 		switch(event.keyCode) {
 			case 38:
 				globalThis.game.play('Up');
@@ -263,20 +263,20 @@ window.onload = () => {
 		}
 	});
 	var touch_start = null;
-	game.addEventListener("touchstart", (event) => {
+	window.addEventListener("touchstart", (event) => {
 		touch_start = {
 			x: event.changedTouches[0].pageX,
 			y: event.changedTouches[0].pageY,
 			t: event.timeStamp,
 		};
 	});
-	game.addEventListener("touchmove", (event) => {
+	window.addEventListener("touchmove", (event) => {
 		if (touch_start===null) return;
 		let dt = event.timeStamp - touch_start.t;
 		if (dt<200) event.preventDefault();
 		else touch_start = null; // Cancel swipe detection
 	});
-	game.addEventListener("touchend", (event) => {
+	window.addEventListener("touchend", (event) => {
 		if (touch_start===null) return;
 		let dt = event.timeStamp - touch_start.t;
 		let dx = event.changedTouches[0].pageX - touch_start.x;
