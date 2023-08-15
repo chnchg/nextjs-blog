@@ -35,6 +35,11 @@ export default function RootLayout({ children }) {
     <div className={styles.nav}>
     <ul className={styles.menu}>
 				<li><Link href="/">Home</Link></li>
+				<li><a href="games">Games</a>
+				<ul>
+					<li><a href="games/game2048.html">2048 Game</a></li>
+				</ul>
+				</li>
 				<li><Link href="/projects">Projects</Link>
 					<ul className={styles.submenu}>
 						{projects.map(({id, name}) => <li key={id}>

@@ -8,7 +8,6 @@ var project_list = [
 	{id:'prog', name:'Programming'},
 	{id:'hard', name:'Hardware'},
 	{id:'button', name:'Button Showcase'},
-	{id:'2048', name:'Board game: 2048'},
 ];
 
 export function get_available_projects()
